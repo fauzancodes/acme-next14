@@ -17,6 +17,8 @@ const config: Config = {
           500: '#0070F3',
           600: '#2F6FEB',
         },
+        primary: '#004BFF',
+        dark: '#1D1D1D'
       },
     },
     keyframes: {
