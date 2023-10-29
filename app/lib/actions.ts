@@ -143,3 +143,34 @@ export async function authenticate(
     throw error;
   }
 }
+
+const CustomerSchema = z.object({
+  id: z.string({
+    invalid_type_error: 'Invalid invoice id.',
+  }),
+  name: z.string({
+    invalid_type_error: 'Please enter customer name.',
+  }),
+  email: z.string({
+    invalid_type_error: 'Please enter customer email.',
+  }),
+  image_url: z.string({
+    invalid_type_error: 'Please enter customer image url.',
+  }),
+});
+
+const DeleteCustomer = CustomerSchema.pick({ id: true });
+
+export async function deleteCustomer(formData: FormData) {
+  // throw new Error('Failed to Delete Invoice');
+
+  const id = formData.get('id')?.toString();
+
+  try {
+    await sql`DELETE FROM customers WHERE id = ${id}`;
+    revalidatePath('/dashboard/customers');
+    return { message: 'Deleted Customer.' };
+  } catch (error) {
+    return { message: 'Database Error: Failed to Delete Customer.' };
+  }
+}
