@@ -111,7 +111,7 @@ export default async function CustomersTable({
                   </td>
                   <td className="whitespace-nowrap bg-white py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <Update href={`/dashboard/invoices/${customer.id}/edit`} />
+                      <Update href={`/dashboard/customers/${customer.id}/edit`} />
                       <Delete id={customer.id} deleteFunction={deleteCustomer} />
                     </div>
                   </td>
