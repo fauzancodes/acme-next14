@@ -5,10 +5,14 @@ import { Button } from '../button';
 import { createCustomer } from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
 import { EnvelopeIcon, PhotoIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import Image from 'next/image';
+import { CldUploadWidget } from 'next-cloudinary';
 
 export default function Form() {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(createCustomer, initialState);
+  const [imageUrl, setImageUrl] = useState('/customers/image-placeholder.webp');
 
   return (
     <form action={dispatch}>
@@ -78,6 +82,32 @@ export default function Form() {
           <label htmlFor="image_url" className="mb-2 block text-sm font-medium">
             Image
           </label>
+          <div className={`flex flex-wrap justify-start items-center gap-5 w-full`}>
+            <Image alt='Preview' src={imageUrl} className={`rounded-lg`} width={150} height={150}/>
+            <CldUploadWidget
+              options={{ 
+                sources: ['local'], 
+                multiple: false,
+              }}
+              signatureEndpoint="/api/sign-cloudinary-params"
+              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET}
+              onSuccess={(result, { widget }) => {
+                if (result?.info && typeof result.info === 'object') {
+                  setImageUrl(result.info.secure_url);
+                }
+                widget.close();
+              }}
+            >
+              {({ open }) => {
+                function handleOnClick() {
+                  open();
+                }
+                return (
+                  <Button type="button" onClick={handleOnClick}>Upload Image</Button>
+                );
+              }}
+            </CldUploadWidget>
+          </div>
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
@@ -87,6 +117,7 @@ export default function Form() {
                 placeholder="Enter customer image url"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="image-error"
+                value={imageUrl}
               />
             </div>
             <PhotoIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
